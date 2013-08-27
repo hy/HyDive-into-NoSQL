@@ -89,7 +89,7 @@ class TheApp < Sinatra::Base
         CN = Mongo::Connection.new
         DB = CN.db
 
-        puts('[OK!]  Mongo URI Connection Configured via URI')
+        puts('[OK!]  Mongo URI Connection Configured via single env var')
       rescue Exception => e;  log_exception( e, where );  end 
     end
 
@@ -103,7 +103,7 @@ class TheApp < Sinatra::Base
         DB = CN.db(ENV['MONGO_DB_NAME'])
         auth = DB.authenticate(ENV['MONGO_USER_ID'], ENV['MONGO_PASSWORD'])
 
-        puts('[OK!]  Mongo Connection Configured via separated params')
+        puts('[OK!]  Mongo Connection Configured via separated env vars')
       rescue Exception => e;  log_exception( e, where );  end
     end
 
