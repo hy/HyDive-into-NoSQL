@@ -81,7 +81,7 @@ class TheApp < Sinatra::Base
 
     if ENV['NEO4J_URL']
       begin
-        where = 'NEO4j CONFIG via ENV var set via heroku addons:add neo4j'
+        puts where = 'NEO4j CONFIG via ENV var set via heroku addons:add neo4j'
         require 'neography'
 
         neo4j_uri = URI ( ENV['NEO4J_URL'] )
@@ -94,8 +94,10 @@ class TheApp < Sinatra::Base
           verification_req.basic_auth(neo4j_uri.user, neo4j_uri.password)
         end #if
 
-        response = http.request(verification_req)
+        puts response = http.request(verification_req)
         abort "Neo4j down" if response.code != '200' 
+
+        # console access via: heroku addons:open neo4j
 
         puts("[OK!]  Neo4j Connection Configured and avail at #{neo4j_uri}")
       rescue Exception => e;  log_exception( e, where );  end
