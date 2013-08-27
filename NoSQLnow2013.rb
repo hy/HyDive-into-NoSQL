@@ -80,22 +80,31 @@ class TheApp < Sinatra::Base
       puts '[OK!]  Constants Initialized'
     end
 
-    if ENV['MONGO_URL'] 
+    if ENV['MONGODB_URI']
       begin
-        where = 'MONGO CONFIG'
+        where = 'MONGO CONFIG via single ENV var containing the URI'
+        require 'mongo'
+        require 'bson'    #Do NOT 'require bson_ext' just put it in Gemfile!
+
+        CN = Mongo::Connection.new
+        DB = CN.db
+
+        puts('[OK!]  Mongo URI Connection Configured via URI')
+      rescue Exception => e;  log_exception( e, where );  end 
+    end
+
+    if ENV['MONGO_URL'] and not ENV['MONGODB_URI']
+      begin
+        where = 'MONGO CONFIG via multiple separated ENV vars'
         require 'mongo'
         require 'bson'    #Do NOT 'require bson_ext' just put it in Gemfile!
         
         CN = Mongo::Connection.new(ENV['MONGO_URL'], ENV['MONGO_PORT'])
         DB = CN.db(ENV['MONGO_DB_NAME'])
         auth = DB.authenticate(ENV['MONGO_USER_ID'], ENV['MONGO_PASSWORD'])
-        puts('[OK!]  Mongo Connection Configured')
-      rescue Exception => e
-        puts('MongoConnect EXCEPTION --> trying ENV[MONGODB_URI]')
-        CN = Mongo::Connection.new
-        DB = CN.db
-        puts('OK:  Looks like we have Successfully Rescued the Mongo Init!')
-      end
+
+        puts('[OK!]  Mongo Connection Configured via separated params')
+      rescue Exception => e;  log_exception( e, where );  end
     end
 
     if ENV['REDISTOGO_URL']
