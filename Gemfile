@@ -5,6 +5,8 @@ gem 'sinatra'
 gem 'sinatra-graph'
 gem 'thin'
 
+gem 'neography'
+
 gem 'hiredis'
 gem 'redis'
 

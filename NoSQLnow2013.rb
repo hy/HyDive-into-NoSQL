@@ -1,3 +1,9 @@
+# TODO: 
+# [X] Tidy up both forms of Mongo init
+# [/] Add Neo4j
+# [ ] Re-arrange config by prod / dev to allow remote / local db connections
+
+
 ###############################################################################
 # Ruby Gem Core Requires  --  this first grouping is essential
 #   (Deploy-to: Heroku Cedar Stack)
@@ -8,14 +14,15 @@ require 'sinatra/base'
  require 'erb'
 require 'sinatra/graph'
 
-require 'pony'
-
+require 'net/http'
+require 'uri'
 require 'json'
 
+require 'pony'
 
 
 ###############################################################################
-# Optional Feature Gem Requires (Not essential for base version)
+# Optional Requires (Not essential for base version)
 ###############################################################################
 # require 'temporals'
 
@@ -25,14 +32,6 @@ require 'json'
 # If will be needed, Insert these into Gemfile:
 # gem 'ri_cal'
 # gem 'tzinfo'
-
-
-
-###############################################################################
-# Non-Gem Requires (Not essential for basic version)
-###############################################################################
-# require 'net/http'
-# require 'uri'
 
 # require 'yaml'
 
@@ -78,6 +77,28 @@ class TheApp < Sinatra::Base
       ONE_HOUR = 60.0 * 60.0
       ONE_DAY = 24.0 * ONE_HOUR
       puts '[OK!]  Constants Initialized'
+    end
+
+    if ENV['NEO4J_URL']
+      begin
+        where = 'NEO4j CONFIG via ENV var set via heroku addons:add neo4j'
+        require 'neography'
+
+        neo4j_uri = URI ( ENV['NEO4J_URL'] )
+        neo = Neography::Rest.new(neo4j_uri.to_s)
+
+        http = Net::HTTP.new(neo4j_uri.host, new4j_uri.port)
+        verification_req = Net::HTTP::Get.new(neo4j_uri.request_uri)
+        
+        if neo4j_uri.user
+          verification_req.basic_auth(neo4j_uri.user, neo4j_uri.password)
+        end #if
+
+        response = http.request(verification_req)
+        abort "Neo4j down" if response.code != '200' 
+
+        puts("[OK!]  Neo4j Connection Configured and avail at #{neo4j_uri}")
+      rescue Exception => e;  log_exception( e, where );  end
     end
 
     if ENV['MONGODB_URI']
