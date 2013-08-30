@@ -81,13 +81,13 @@ class TheApp < Sinatra::Base
 
     if ENV['NEO4J_URL']
       begin
-        puts where = 'NEO4j CONFIG via ENV var set via heroku addons:add neo4j'
+        where = 'NEO4j CONFIG via ENV var set via heroku addons:add neo4j'
         require 'neography'
 
         neo4j_uri = URI ( ENV['NEO4J_URL'] )
         neo = Neography::Rest.new(neo4j_uri.to_s)
 
-        http = Net::HTTP.new(neo4j_uri.host, new4j_uri.port)
+        http = Net::HTTP.new(neo4j_uri.host, neo4j_uri.port)
         verification_req = Net::HTTP::Get.new(neo4j_uri.request_uri)
         
         if neo4j_uri.user
