@@ -89,7 +89,7 @@ class TheApp < Sinatra::Base
         verification_req = Net::HTTP::Get.new(neo4j_uri.request_uri)
         
         if neo4j_uri.user
-          verification_req.basic_auth(neo4j_uri.user, new4j_uri.password)
+          verification_req.basic_auth(neo4j_uri.user, neo4j_uri.password)
         end #if
 
         response = http.request(verification_req)
