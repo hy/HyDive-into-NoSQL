@@ -1,5 +1,4 @@
-# TODO: 
-# [ ] Test error trapping in config block
+# TODO List: 
 
 
 ###############################################################################
@@ -97,7 +96,7 @@ class TheApp < Sinatra::Base
 
         # console access via: heroku addons:open neo4j
 
-        puts("[OK!]  Neo4j Connection Configured and avail at #{neo4j_uri}")
+        puts("[OK!]  Neo4j Configured at: #{neo4j_uri}")
       rescue Exception => e;  puts "[BAD] Neo4j config: #{e.message}";  end
     end
 
@@ -206,7 +205,7 @@ class TheApp < Sinatra::Base
 
 
   # Since Mongo 'speaks' JSON, this makes many 3rd-party integrations
-  # incredibly nice and simple, for example very simple graphing. . .   
+  # incredibly nice and simple, for example graphing. . .   
 
   graph 'Temperature', :prefix => '/graphs' do
     cursor = DB['temp'].find({'temp' => {'$exists' => true}})
@@ -289,6 +288,10 @@ class TheApp < Sinatra::Base
     puts 'setting: ' + params['key']
     puts 'to: ' + params['value']
     REDIS.set(params['key'], params['value'])
+  end
+
+  get '/getfromredis' do
+    puts REDIS.get(params['key'])
   end
 
   get '/test' do
