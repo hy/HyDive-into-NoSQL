@@ -1,7 +1,5 @@
 # TODO: 
-# [X] Tidy up both forms of Mongo init
-# [/] Add Neo4j
-# [ ] Re-arrange config by prod / dev to allow remote / local db connections
+# [ ] Test error trapping in config block
 
 
 ###############################################################################
@@ -100,7 +98,7 @@ class TheApp < Sinatra::Base
         # console access via: heroku addons:open neo4j
 
         puts("[OK!]  Neo4j Connection Configured and avail at #{neo4j_uri}")
-      rescue Exception => e;  log_exception( e, where );  end
+      rescue Exception => e;  puts "[BAD] Neo4j config: #{e.message}";  end
     end
 
     if ENV['MONGODB_URI']
@@ -113,7 +111,7 @@ class TheApp < Sinatra::Base
         DB = CN.db
 
         puts('[OK!]  Mongo URI Connection Configured via single env var')
-      rescue Exception => e;  log_exception( e, where );  end 
+      rescue Exception => e;  puts "[BAD] Mongo config(1): #{e.message}";  end
     end
 
     if ENV['MONGO_URL'] and not ENV['MONGODB_URI']
@@ -127,7 +125,7 @@ class TheApp < Sinatra::Base
         auth = DB.authenticate(ENV['MONGO_USER_ID'], ENV['MONGO_PASSWORD'])
 
         puts('[OK!]  Mongo Connection Configured via separated env vars')
-      rescue Exception => e;  log_exception( e, where );  end
+      rescue Exception => e;  puts "[BAD] Mongo config(M): #{e.message}";  end
     end
 
     if ENV['REDISTOGO_URL']
@@ -140,7 +138,7 @@ class TheApp < Sinatra::Base
                           :password => uri.password)
         REDIS.set('CacheStatus', '[OK!]  Redis Configured')
         puts REDIS.get('CacheStatus')
-      rescue Exception => e;  log_exception( e, where );  end
+      rescue Exception => e;  puts "[BAD] Redis config: #{e.message}";  end
     end
 
     if ENV['TWILIO_ACCOUNT_SID']&&ENV['TWILIO_AUTH_TOKEN']
@@ -152,7 +150,7 @@ class TheApp < Sinatra::Base
           ENV['TWILIO_ACCOUNT_SID'], ENV['TWILIO_AUTH_TOKEN'] )
         $twilio_account = $t_client.account
         puts '[OK!]  Twilio Client Configured for: ' + ENV['TWILIO_CALLER_ID']
-      rescue Exception => e;  log_exception( e, where );  end
+      rescue Exception => e;  puts "[BAD] Twilio config: #{e.message}";  end
     end
 
     if ENV['SENDGRID_USERNAME'] && ENV['SENDGRID_PASSWORD']
@@ -171,7 +169,7 @@ class TheApp < Sinatra::Base
           }
         }
         puts "[OK!]  SendGrid Options Configured"
-      rescue Exception => e;  log_exception( e, where );  end
+      rescue Exception => e;  puts "[BAD] SendGrid config: #{e.message}";  end
     end
 
 
@@ -201,7 +199,7 @@ class TheApp < Sinatra::Base
         puts '[OK!]  Google API Configured with Scope Including:'
         puts GClient.authorization.scope
 
-      rescue Exception => e;  log_exception( e, where );  end
+      rescue Exception => e;  puts "[BAD] GoogleAPI config: #{e.message}";  end
     end
 
   end #configure
