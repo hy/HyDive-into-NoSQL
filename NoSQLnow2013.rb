@@ -277,16 +277,19 @@ class TheApp < Sinatra::Base
 
 
   # Look how easy Redis is to use. . . 
-  # Let's give whatever we get as a (key, value) from the params to REDIS.set
+
+  # Let's give whatever we receive in the params to REDIS.set
   get '/redisify' do
     puts 'setting: ' + params['key']
     puts 'to: ' + params['value']
     REDIS.set(params['key'], params['value'])
   end
 
+  # REDIS.get fetches it back. . . 
   get '/getfromredis' do
-    value = REDIS.get(params['key'])
-    puts "Value = #{value}"
+    puts @value = REDIS.get(params['key'])
+
+    erb :getfromredis 
   end
 
   get '/test' do
