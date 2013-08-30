@@ -247,9 +247,6 @@ class TheApp < Sinatra::Base
     begin
       print_diagnostics_on_route_entry
       @these_variables_will_be_available_in_all_routes = true
-
-      REDIS.set("Time", Time.now)
-
       @now_f = Time.now.to_f
     rescue Exception => e;  log_exception( e, where );  end
   end
@@ -257,9 +254,6 @@ class TheApp < Sinatra::Base
   after do
     puts where = 'AFTER FILTER'
     begin
-
-    puts "REDIS STORED THE TIME AS: "
-    puts REDIS.get("Time")
 
     rescue Exception => e;  log_exception( e, where );  end
   end
@@ -291,7 +285,8 @@ class TheApp < Sinatra::Base
   end
 
   get '/getfromredis' do
-    puts REDIS.get(params['key'])
+    value = REDIS.get(params['key'])
+    puts "Value = #{value}"
   end
 
   get '/test' do
