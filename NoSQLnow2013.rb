@@ -76,6 +76,36 @@ class TheApp < Sinatra::Base
       puts '[OK!]  Constants Initialized'
     end
 
+
+    if ENV['TWITTER_KEY'] && ENV['TWITTER_SECRET']&&ENV['OAUTH_TOKEN'] && ENV['OAUTH_TOKEN_SECRET']
+      begin
+        where = 'TWITTER CONFIG'
+        require 'twitter'
+        require 'oauth'
+        @opts = {
+            'oauth_token' => ENV['OAUTH_TOKEN'],
+            'oauth_token_secret' => ENV['OAUTH_TOKEN_SECRET'],
+            'api_key' => ENV['TWITTER_KEY'],
+            'api_secret' => ENV['TWITTER_SECRET'],
+        }
+        consumer = OAuth::Consumer.new("#{@opts['api_key']}", "#{@opts['api_secret']}",
+                                       { :site => "http://api.twitter.com",
+                                         :scheme => :header
+                                       })
+
+        # now create the access token object from passed values
+        token_hash = { :oauth_token => "#{@opts['oauth_token']}",
+                       :oauth_token_secret => "#{@opts['oauth_token_secret']}"
+                   }
+        $twitter_handle = OAuth::AccessToken.from_hash(consumer, token_hash )
+        puts '[OK!]  Twitter Client Configured'
+
+      rescue Exception => e; puts "[BAD] Twitter config: #{e.message}"; end
+    end
+
+
+
+
     if ENV['NEO4J_URL']
       begin
         where = 'NEO4j CONFIG via ENV var set via heroku addons:add neo4j'

@@ -17,6 +17,9 @@ gem 'bson_ext'
 gem 'twilio-ruby'
 gem 'builder'
 
+gem 'twitter'
+gem 'oauth'
+
 gem 'temporals'
 
 gem 'google-api-client'
