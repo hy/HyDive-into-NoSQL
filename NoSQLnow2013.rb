@@ -103,8 +103,8 @@ class TheApp < Sinatra::Base
                        :oauth_token_secret => "#{@opts['oauth_token_secret']}"
                    }
 
-        token_hash = { ENV['TWITTER_ACCESS_TOKEN'],
-                       ENV['TWITTER_ACCESS_TOKEN_SECRET'] }
+        token_hash = {:oauth_token => ENV['TWITTER_ACCESS_TOKEN'],
+                      :oauth_token_secret => ENV['TWITTER_ACCESS_TOKEN_SECRET']}
 
         
         $twitter_handle = OAuth::AccessToken.from_hash(consumer, token_hash )
