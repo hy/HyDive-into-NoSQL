@@ -79,43 +79,27 @@ class TheApp < Sinatra::Base
 
     if ENV['TWITTER_CONSUMER_KEY'] && ENV['TWITTER_CONSUMER_SECRET'] && \
        ENV['TWITTER_ACCESS_TOKEN'] && ENV['TWITTER_ACCESS_TOKEN_SECRET']
+
       begin
-        where = 'TWITTER CONFIG'
         require 'twitter'
         require 'oauth'
-        @opts = {
-            'api_key' => ENV['TWITTER_CONSUMER_KEY'],
-            'api_secret' => ENV['TWITTER_CONSUMER_SECRET'],
-            'oauth_token' => ENV['TWITTER_ACCESS_TOKEN'],
-            'oauth_token_secret' => ENV['TWITTER_ACCESS_TOKEN_SECRET']
-        }
-        c = OAuth::Consumer.new("#{@opts['api_key']}",
-                                "#{@opts['api_secret']}",
-                                       { :site => "http://api.twitter.com",
-                                         :scheme => :header
-                                       })
+
         consumer = OAuth::Consumer.new(ENV['TWITTER_CONSUMER_KEY'],
                                        ENV['TWITTER_CONSUMER_SECRET'],
                                        { :site => "http://api.twitter.com",
                                          :scheme => :header })
 
-        token_hash = { :oauth_token => "#{@opts['oauth_token']}",
-                       :oauth_token_secret => "#{@opts['oauth_token_secret']}"
-                   }
-
         token_hash = {:oauth_token => ENV['TWITTER_ACCESS_TOKEN'],
                       :oauth_token_secret => ENV['TWITTER_ACCESS_TOKEN_SECRET']}
-
         
         $twitter_handle = OAuth::AccessToken.from_hash(consumer, token_hash )
         puts '[OK!]  Twitter Client Configured'
-
       rescue Exception => e; puts "[BAD] Twitter config: #{e.message}"; end
     end
 
     if ENV['NEO4J_URL']
       begin
-        where = 'NEO4j CONFIG via ENV var set via heroku addons:add neo4j'
+        note = 'NEO4j CONFIG via ENV var set via heroku addons:add neo4j'
         require 'neography'
 
         neo4j_uri = URI ( ENV['NEO4J_URL'] )
@@ -139,7 +123,6 @@ class TheApp < Sinatra::Base
 
     if ENV['MONGODB_URI']
       begin
-        where = 'MONGO CONFIG via single ENV var containing the URI'
         require 'mongo'
         require 'bson'    #Do NOT 'require bson_ext' just put it in Gemfile!
 
@@ -152,7 +135,6 @@ class TheApp < Sinatra::Base
 
     if ENV['MONGO_URL'] and not ENV['MONGODB_URI']
       begin
-        where = 'MONGO CONFIG via multiple separated ENV vars'
         require 'mongo'
         require 'bson'    #Do NOT 'require bson_ext' just put it in Gemfile!
         
@@ -166,7 +148,7 @@ class TheApp < Sinatra::Base
 
     if ENV['REDISTOGO_URL']
       begin
-        where = 'REDIS CONFIG'
+        note = 'CONFIG via ENV var set via heroku addons:add redistogo'
         require 'hiredis'
         require 'redis'
         uri = URI.parse(ENV['REDISTOGO_URL'])
@@ -179,7 +161,6 @@ class TheApp < Sinatra::Base
 
     if ENV['TWILIO_ACCOUNT_SID']&&ENV['TWILIO_AUTH_TOKEN']
       begin
-        where = 'TWILIO CONFIG'
         require 'twilio-ruby'
         require 'builder'
         $t_client = Twilio::REST::Client.new(
@@ -191,7 +172,6 @@ class TheApp < Sinatra::Base
 
     if ENV['SENDGRID_USERNAME'] && ENV['SENDGRID_PASSWORD']
       begin
-        where = 'SENDGRID CONFIG'
         Pony.options = {
           :via => :smtp,
           :via_options => {
@@ -215,7 +195,6 @@ class TheApp < Sinatra::Base
 
     if ENV['GOOGLE_ID'] && ENV['GOOGLE_SECRET']
       begin
-        where = 'GOOGLE API CONFIG'
         require 'google/api_client'
         options = {:application_name => ENV['APP'],
                    :application_version => ENV['APP_BASE_VERSION']}
