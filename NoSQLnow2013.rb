@@ -88,7 +88,6 @@ class TheApp < Sinatra::Base
                                        ENV['TWITTER_CONSUMER_SECRET'],
                                        { :site => "http://api.twitter.com",
                                          :scheme => :header })
-
         token_hash = {:oauth_token => ENV['TWITTER_ACCESS_TOKEN'],
                       :oauth_token_secret => ENV['TWITTER_ACCESS_TOKEN_SECRET']}
         
