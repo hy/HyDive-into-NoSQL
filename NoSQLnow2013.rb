@@ -77,18 +77,18 @@ class TheApp < Sinatra::Base
     end
 
 
-    if ENV['TWITTER_KEY'] && ENV['TWITTER_SECRET']&&ENV['OAUTH_TOKEN'] && ENV['OAUTH_TOKEN_SECRET']
+    if ENV['TWITTER_CONSUMER_KEY']&&ENV['TWITTER_CONSUMER_SECRET']&&ENV['TWITTER_ACCESS_TOKEN'] && ENV['TWITTER_ACCESS_TOKEN_SECRET']
       begin
         where = 'TWITTER CONFIG'
         require 'twitter'
         require 'oauth'
         @opts = {
-            'oauth_token' => ENV['OAUTH_TOKEN'],
-            'oauth_token_secret' => ENV['OAUTH_TOKEN_SECRET'],
-            'api_key' => ENV['TWITTER_KEY'],
-            'api_secret' => ENV['TWITTER_SECRET'],
+            'api_key' => ENV['TWITTER_CONSUMER_KEY'],
+            'api_secret' => ENV['TWITTER_CONSUMER_SECRET'],
+            'oauth_token' => ENV['TWITTER_ACCESS_TOKEN'],
+            'oauth_token_secret' => ENV['TWITTER_ACCESS_TOKEN_SECRET']
         }
-        consumer = OAuth::Consumer.new("#{@opts['api_key']}", "#{@opts['api_secret']}",
+        c = OAuth::Consumer.new("#{@opts['api_key']}","#{@opts['api_secret']}",
                                        { :site => "http://api.twitter.com",
                                          :scheme => :header
                                        })
@@ -97,14 +97,11 @@ class TheApp < Sinatra::Base
         token_hash = { :oauth_token => "#{@opts['oauth_token']}",
                        :oauth_token_secret => "#{@opts['oauth_token_secret']}"
                    }
-        $twitter_handle = OAuth::AccessToken.from_hash(consumer, token_hash )
+        $twitter_handle = OAuth::AccessToken.from_hash(c, token_hash )
         puts '[OK!]  Twitter Client Configured'
 
       rescue Exception => e; puts "[BAD] Twitter config: #{e.message}"; end
     end
-
-
-
 
     if ENV['NEO4J_URL']
       begin
