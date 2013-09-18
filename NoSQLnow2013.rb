@@ -102,21 +102,21 @@ class TheApp < Sinatra::Base
         require 'neography'
 
         neo4j_uri = URI ( ENV['NEO4J_URL'] )
-        neo = Neography::Rest.new(neo4j_uri.to_s)
+        $neo = Neography::Rest.new(neo4j_uri.to_s)
 
         http = Net::HTTP.new(neo4j_uri.host, neo4j_uri.port)
         verification_req = Net::HTTP::Get.new(neo4j_uri.request_uri)
-        
+
         if neo4j_uri.user
           verification_req.basic_auth(neo4j_uri.user, neo4j_uri.password)
         end #if
 
         response = http.request(verification_req)
-        abort "Neo4j down" if response.code != '200' 
+        abort "Neo4j down" if response.code != '200'
 
         # console access via: heroku addons:open neo4j
 
-        puts("[OK!]  Neo4j Configured at: #{neo4j_uri}")
+        puts("[OK!]  Neo #{neo4j_uri},:#{neo4j_uri.user}:#{neo4j_uri.password}")
       rescue Exception => e;  puts "[BAD] Neo4j config: #{e.message}";  end
     end
 
@@ -128,7 +128,7 @@ class TheApp < Sinatra::Base
         CN = Mongo::Connection.new
         DB = CN.db
 
-        puts('[OK!]  Mongo URI Connection Configured via single env var')
+        puts("[OK!]  Mongo Configured-via-URI #{CN.host_port} #{CN.auths}")
       rescue Exception => e;  puts "[BAD] Mongo config(1): #{e.message}";  end
     end
 
@@ -136,7 +136,7 @@ class TheApp < Sinatra::Base
       begin
         require 'mongo'
         require 'bson'    #Do NOT 'require bson_ext' just put it in Gemfile!
-        
+
         CN = Mongo::Connection.new(ENV['MONGO_URL'], ENV['MONGO_PORT'])
         DB = CN.db(ENV['MONGO_DB_NAME'])
         auth = DB.authenticate(ENV['MONGO_USER_ID'], ENV['MONGO_PASSWORD'])
@@ -153,7 +153,7 @@ class TheApp < Sinatra::Base
         uri = URI.parse(ENV['REDISTOGO_URL'])
         REDIS = Redis.new(:host => uri.host, :port => uri.port,
                           :password => uri.password)
-        REDIS.set('CacheStatus', '[OK!]  Redis Configured')
+        REDIS.set('CacheStatus', "[OK!]  Redis #{uri}")
         puts REDIS.get('CacheStatus')
       rescue Exception => e;  puts "[BAD] Redis config: #{e.message}";  end
     end
